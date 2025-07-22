@@ -33,6 +33,16 @@
                             <span class="micon dw dw-user"></span><span class="mtext">User Management</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('plate.scan') }}" class="dropdown-toggle no-arrow">
+                            <span class="micon dw dw-search"></span><span class="mtext">Scan Plate</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('plate.scan.records') }}" class="dropdown-toggle no-arrow">
+                            <span class="micon dw dw-list"></span><span class="mtext">Scan History</span>
+                        </a>
+                    </li>
                     <li class="dropdown">
                         <a href="javascript:;" class="dropdown-toggle">
                             <span class="micon dw dw-table"></span><span class="mtext">Applications</span>
@@ -42,11 +52,7 @@
                             <li><a href="{{ route('admin.applications.index') }}">Manage Applications</a></li>
                         </ul>
                     </li>
-                    {{-- <li>
-                        <a href="{{ route('admin.applications.index') }}" class="dropdown-toggle no-arrow">
-                            <span class="micon dw dw-list"></span><span class="mtext">Manage Application</span>
-                        </a>
-                    </li> --}}
+                    
                     <li>
                         <a href="{{ route('admin.land.allocate') }}" class="dropdown-toggle no-arrow">
                             <span class="micon dw dw-list"></span><span class="mtext">Allocate Land</span>

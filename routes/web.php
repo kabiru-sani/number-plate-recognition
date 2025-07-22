@@ -28,6 +28,9 @@ use App\Livewire\Staff\Application\NewApplicationComponent;
 use App\Livewire\Staff\Application\ApplicationsComponent;
 use App\Livewire\Staff\AllocationDetailsComponent;
 
+use App\Livewire\PlateScanner;
+use App\Livewire\PlateScanRecord;
+
 
 
 Route::get('/',WelcomeComponent::class)->name('home');
@@ -50,6 +53,9 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
 
         Route::get('/allocate-land',AllocateLandComponent::class)->name('admin.land.allocate');
         Route::get('/deduction-setup',SetDeductionTargetComponent::class)->name('admin.deduction.setup');
+
+        Route::get('/scan-plate',PlateScanner::class)->name('plate.scan');
+        Route::get('/scaned-platse-record',PlateScanRecord::class)->name('plate.scan.records');
     });
 
     Route::middleware(['staff'])->prefix('staff')->group(function(){

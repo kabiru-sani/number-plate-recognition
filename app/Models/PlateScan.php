@@ -9,6 +9,7 @@ class PlateScan extends Model
     protected $fillable = [
         'user_id',
         'plate',
+        'score',
         'image_path',
         'raw_response',
     ];

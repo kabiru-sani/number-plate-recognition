@@ -52,6 +52,7 @@ class PlateScanner extends Component
         PlateScan::create([
             'user_id' => auth()->id(),
             'plate' => $plate,
+            'score' => $score,
             'image_path' => $relativePath,
             'raw_response' => json_encode($data),
         ]);

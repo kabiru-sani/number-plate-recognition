@@ -43,6 +43,12 @@
                             <span class="micon dw dw-list"></span><span class="mtext">Scan History</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('plate.scan.live') }}" class="dropdown-toggle no-arrow">
+                            <span class="micon dw dw-search"></span><span class="mtext">Live Capture</span>
+                        </a>
+                    </li>
+
                     <li class="dropdown">
                         <a href="javascript:;" class="dropdown-toggle">
                             <span class="micon dw dw-table"></span><span class="mtext">Applications</span>

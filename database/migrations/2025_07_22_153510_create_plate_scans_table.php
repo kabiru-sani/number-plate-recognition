@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('plate')->nullable();
+            $table->string('score')->nullable();
             $table->string('image_path')->nullable();
             $table->json('raw_response')->nullable();
             $table->timestamps();

@@ -33,6 +33,8 @@
 
 		gtag('config', 'UA-119386393-1');
 	</script>
+	@livewireScripts
+	@stack('styles')
 </head>
 <body>
     <style>
@@ -66,6 +68,8 @@
 		</div>
 	</div>
 	<!-- js -->
+	@livewireScripts
+	@stack('scripts')
 	<script src="{{ asset('admin/vendors/scripts/core.js') }}"></script>
 	<script src="{{ asset('admin/vendors/scripts/script.min.js') }}"></script>
 	<script src="{{ asset('admin/vendors/scripts/process.js') }}"></script>

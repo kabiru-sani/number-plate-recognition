@@ -19,9 +19,9 @@
                 @forelse ($history as $scan)
                     <tr>
                         <td>{{ $scan->created_at->format('Y-m-d H:i') }}</td>
-                        <td>{{ $scan->plate }}</td>
+                        <td>{{ strtoupper($scan->plate) }}</td>
                         <td>{{ round($scan->score * 100, 2) }}%</td>
-                        <td><img src="{{ asset('/assets/img/plates' . $scan->image_path) }}" alt="Plate Image" width="60" class="img-thumbnail"></td>
+                        <td><img src="{{ asset( $scan->image_path) }}" alt="Plate Image" width="80" class="img-thumbnail"></td>
                         <td>
                             <button class="btn btn-sm btn-outline-info" wire:click="viewScan({{ $scan->id }})">View</button>
                         </td>

@@ -49,7 +49,7 @@
                     <div class="modal-body">
                         <p><strong>Plate:</strong> {{ $selectedScan->plate }}</p>
                         <p><strong>Confidence:</strong> {{ round($selectedScan->score * 100, 2) }}%</p>
-                        <img src="{{ asset('storage/' . $selectedScan->image_path) }}" class="img-fluid rounded mb-3" style="max-width: 300px;">
+                        <img src="{{ asset($selectedScan->image_path) }}" class="img-fluid rounded mb-3" style="max-width: 300px;">
 
                         <h6>Raw API Response:</h6>
                         <pre class="bg-light p-3 rounded" style="max-height: 300px; overflow-y: auto;">{{ json_encode(json_decode($selectedScan->raw_response), JSON_PRETTY_PRINT) }}</pre>

@@ -15,17 +15,37 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name'      => 'Kabiru Sani',
-            'email'     => 'staff@test.com',
-            'role'      => 'staff',
-            'password'  =>  Hash::make('123456')
+            'firstname'           => 'Kabiru',
+            'middlename'          => 'M.',
+            'lastname'            => 'Sanni',
+            'service_number'      => 'NA00123',
+            'email'               => 'admin@test.com',
+            'phone'               => '07068310803',
+            'unit'                => '1 Division',
+            'rank'                => 'Major',
+            'role'                => 'admin',
+            'status'              => 'Active',
+            'email_verified_at'   => now(),
+            'password'            => Hash::make('password123'),
+            'profile_photo_path'  => null,
+            'current_team_id'     => null,
         ]);
 
         User::create([
-            'name'      => 'Ishaq Kamaldeen',
-            'email'     => 'admin@test.com',
-            'role'      => 'admin',
-            'password'  =>  Hash::make('123456')
+            'firstname'           => 'Grace',
+            'middlename'          => 'O.',
+            'lastname'            => 'Bello',
+            'service_number'      => 'NA00456',
+            'email'               => 'personnel@army.ng',
+            'phone'               => '08087654321',
+            'unit'                => 'Finance',
+            'rank'                => 'Captain',
+            'role'                => 'personnel',
+            'status'              => 'Active',
+            'email_verified_at'   => now(),
+            'password'            => Hash::make('password123'),
+            'profile_photo_path'  => null,
+            'current_team_id'     => null,
         ]);
     }
 }

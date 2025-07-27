@@ -24,6 +24,8 @@
 
 	<link rel="stylesheet" type="text/css" href="{{ asset('admin/src/plugins/jquery-steps/jquery.steps.css') }}">
 
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
 	<script>
@@ -91,9 +93,9 @@
 	<script src="{{ asset('admin/src/plugins/datatables/js/buttons.flash.min.js') }}"></script>
 	<script src="{{ asset('admin/src/plugins/datatables/js/pdfmake.min.js') }}"></script>
 	<script src="{{ asset('admin/src/plugins/datatables/js/vfs_fonts.js') }}"></script>
-
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	{{-- <script src="{{ asset('admin/vendors/scripts/datatable-setting.js') }}"></script> --}}
-
+	<x-toast-notification/>
     <script>
         window.addEventListener('load', () => {
             const loader = document.getElementById('simple-loader');

@@ -10,7 +10,9 @@ use Livewire\Component;
 
 class Profile extends Component
 {
-    public string $name = '';
+    public string $firstname = '';
+    public string $middlename = '';
+    public string $lastname = '';
 
     public string $email = '';
 
@@ -19,7 +21,9 @@ class Profile extends Component
      */
     public function mount(): void
     {
-        $this->name = Auth::user()->name;
+        $this->firstname = Auth::user()->firstname;
+        $this->middlename = Auth::user()->firmiddlenamestname;
+        $this->lastname = Auth::user()->lastname;
         $this->email = Auth::user()->email;
     }
 
@@ -31,7 +35,9 @@ class Profile extends Component
         $user = Auth::user();
 
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'firstname' => ['required', 'string', 'max:255'],
+            'middlename' => ['required', 'string', 'max:255'],
+            'lastname' => ['required', 'string', 'max:255'],
 
             'email' => [
                 'required',
@@ -70,5 +76,10 @@ class Profile extends Component
         $user->sendEmailVerificationNotification();
 
         Session::flash('status', 'verification-link-sent');
+    }
+
+    public function render()
+    {
+        return view('livewire.settings.profile')->layout('layouts.app');
     }
 }

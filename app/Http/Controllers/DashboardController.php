@@ -20,7 +20,10 @@ class DashboardController extends Controller
           case 'admin':
              return redirect()->route('admin.dashboard');
              break;
-          case 'staff':
+          case 'personnel':
+             return redirect()->route('staff.dashboard');
+             break;
+          case 'officer':
              return redirect()->route('staff.dashboard');
              break;
         }

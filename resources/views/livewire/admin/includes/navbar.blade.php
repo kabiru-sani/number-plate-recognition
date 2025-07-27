@@ -49,7 +49,7 @@
                         </a>
                     </li>
 
-                    <li class="dropdown">
+                    {{-- <li class="dropdown">
                         <a href="javascript:;" class="dropdown-toggle">
                             <span class="micon dw dw-table"></span><span class="mtext">Applications</span>
                         </a>
@@ -59,19 +59,7 @@
                         </ul>
                     </li>
                     
-                    <li>
-                        <a href="{{ route('admin.land.allocate') }}" class="dropdown-toggle no-arrow">
-                            <span class="micon dw dw-list"></span><span class="mtext">Allocate Land</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.deduction.setup') }}" class="dropdown-toggle no-arrow">
-                            <span class="micon dw dw-settings"></span><span class="mtext">Deduction Setup</span>
-                        </a>
-                    </li>
-                    
-                    
-                    
+                    --}}
                 @else
                     <li>
                         <a href="{{ route('staff.dashboard') }}" class="dropdown-toggle no-arrow">

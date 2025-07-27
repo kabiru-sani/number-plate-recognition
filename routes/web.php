@@ -14,19 +14,14 @@ use App\Http\Controllers\DashboardController;
 
 use App\Livewire\Admin\AdminDashboardComponent;
 use App\Livewire\Admin\Staff\StaffManagementComponent;
-
-use App\Livewire\Admin\Applications\AdminNewApplicationComponent;
+use App\Livewire\Admin\Staff\EditStaffComponent;
+use App\Livewire\Admin\Staff\ViewStaffComponent;
 
 use App\Livewire\Admin\ManageStaffApplicationComponent;
-use App\Livewire\Admin\AdminViewApplicationDetails;
-use App\Livewire\Admin\AllocateLandComponent;
-use App\Livewire\Admin\SetDeductionTargetComponent;
 
 
 use App\Livewire\Staff\StaffDashboardComponent;
-use App\Livewire\Staff\Application\NewApplicationComponent;
-use App\Livewire\Staff\Application\ApplicationsComponent;
-use App\Livewire\Staff\AllocationDetailsComponent;
+
 
 use App\Livewire\PlateScanner;
 use App\Livewire\PlateScanRecord;
@@ -47,13 +42,8 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::middleware(['admin'])->prefix('admin')->group(function(){
         Route::get('/dashboard',AdminDashboardComponent::class)->name('admin.dashboard');
         Route::get('/user-management',StaffManagementComponent::class)->name('users.index');
-
-        Route::get('/manage-application',ManageStaffApplicationComponent::class)->name('admin.applications.index');
-        Route::get('/application/create',AdminNewApplicationComponent::class)->name('admin.application.create');
-        Route::get('/application/{id}/show',AdminViewApplicationDetails::class)->name('admin.application.show');
-
-        Route::get('/allocate-land',AllocateLandComponent::class)->name('admin.land.allocate');
-        Route::get('/deduction-setup',SetDeductionTargetComponent::class)->name('admin.deduction.setup');
+        Route::get('/user/{id}/edit',EditStaffComponent::class)->name('user.edit');
+        Route::get('/user/{id}/show',ViewStaffComponent::class)->name('user.show');
 
         Route::get('/scan-plate',PlateScanner::class)->name('plate.scan');
         Route::get('/scaned-plates-record',PlateScanRecord::class)->name('plate.scan.records');
@@ -62,8 +52,5 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
 
     Route::middleware(['staff'])->prefix('staff')->group(function(){
         Route::get('/dashboard',StaffDashboardComponent::class)->name('staff.dashboard');
-        Route::get('/application-form',NewApplicationComponent::class)->name('staff.apply');
-        Route::get('/applications',ApplicationsComponent::class)->name('application.index');
-        Route::get('/allocation-details/{id}/',AllocationDetailsComponent::class)->name('allocation.detail');
     });
 });

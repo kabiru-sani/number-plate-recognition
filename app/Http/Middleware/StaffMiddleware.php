@@ -19,7 +19,7 @@ class StaffMiddleware
     {
         $auth_user_type = Auth::user()->role;
 
-        if(Auth::user()->role==="staff"){
+        if(Auth::user()->role==="personnel" || Auth::user()->role==="officer"){
             if(Auth::user()->status=="Active"){
                 return $next($request);
             }else{

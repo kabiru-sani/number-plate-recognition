@@ -6,7 +6,7 @@
         <img src="{{ asset('admin/vendors/images/dash-img.png') }}" alt="Vehicle Entry" class="img-fluid">
       </div>
       <div class="col-md-9">
-        <h4 class="font-20 mb-2">Welcome to ANPR Dashboard, <span class="text-primary font-30">{{ Auth::user()->name }}</span>!</h4>
+        <h4 class="font-20 mb-2">Welcome, <span class="text-primary font-30">{{ Auth::user()->lastname }}!</span></h4>
         <p class="font-16 text-secondary">Monitor vehicle entries, identify plates, and verify registration status.</p>
       </div>
     </div>

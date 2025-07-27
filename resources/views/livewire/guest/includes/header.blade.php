@@ -10,20 +10,10 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
                 <a href="{{ route('home') }}" class="nav-item nav-link @yield('welcome')">Home</a>
-                <a href="{{ route('about') }}" class="nav-item nav-link @yield('about')">About</a>
+                {{-- <a href="{{ route('about') }}" class="nav-item nav-link @yield('about')">About</a>
                 <a href="{{ route('services') }}" class="nav-item nav-link @yield('services')">Service</a>
-                {{--  <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu m-0">
-                        <a href="team.html" class="dropdown-item">Our Team</a>
-                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                        <a href="404.html" class="dropdown-item">404 Page</a>
-                    </div>
-                </div> --}}
-                <a href="{{ route('contact') }}" class="nav-item nav-link @yield('contact')">Contact</a>
+                <a href="{{ route('contact') }}" class="nav-item nav-link @yield('contact')">Contact</a> --}}
             </div>
-            <butaton type="button" class="btn text-secondary ms-3" data-bs-toggle="modal" data-bs-target="#searchModal">
-                <i class="fa fa-search"></i></butaton>
             <a href="{{ route('login') }}"
                 class="btn btn-secondary text-light rounded-pill py-2 px-4 ms-3">Sign in</a>
         </div>

@@ -1341,7 +1341,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td:first-child:before, tabl
 	width: 280px;
 	height: 100vh;
 	z-index: 1000;
-	background: #0b132b;
+	background: #006400;
 	-webkit-transition: all 0.3s ease-in-out;
 	-moz-transition: all 0.3s ease-in-out;
 	-o-transition: all 0.3s ease-in-out;

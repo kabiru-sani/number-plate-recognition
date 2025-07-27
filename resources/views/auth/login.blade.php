@@ -70,80 +70,90 @@
 
 <body>
 
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-            <div class="text-center mb-4">
-                <h4 class="fw-bold">{{ __('Authorized Access') }}</h4>
-            </div>
+    <div class="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
+        <div class="row w-100 justify-content-center">
+            <div class="col-md-8 col-lg-5">
+                <div class="card border-0 shadow-lg p-4 rounded-3">
+                    <div class="text-center mb-4">
+                        <a href="{{ route('home') }}">
+                            <img src="{{ asset('admin/vendors/images/nda-logo.png') }}" alt="Logo" width="180" class="mb-2">
+                        </a>
+                        <h4 class="fw-bold text-primary">{{ __('Secure Admin Login') }}</h4>
+                        <p class="text-muted small mb-0">Enter your credentials to access the dashboard</p>
+                    </div>
 
-            <!-- Session Status -->
-            @if (session('status'))
-            <div class="alert alert-success text-center">
-                {{ session('status') }}
-            </div>
-            @endif
+                    <!-- Session Status -->
+                    @if (session('status'))
+                        <div class="alert alert-success text-center">
+                            {{ session('status') }}
+                        </div>
+                    @endif
 
-            <!-- Validation Errors -->
-            @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0 small">
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
+                    <!-- Validation Errors -->
+                    @if ($errors->any())
+                        <div class="alert alert-danger small">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
+                    <form method="POST" action="{{ route('login') }}">
+                        @csrf
 
-                <!-- Email -->
-                <div class="mb-3">
-                    <label for="email" class="form-label">{{ __('Email address') }}</label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required
-                        autofocus autocomplete="email" placeholder="email@example.com">
-                </div>
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">{{ __('Email address') }}</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}"
+                                required autofocus autocomplete="email" placeholder="email@example.com">
+                        </div>
 
-                <!-- Password -->
-                <div class="mb-3 position-relative">
-                    <label for="password" class="form-label">{{ __('Password') }}</label>
-                    <input type="password" class="form-control" id="password" name="password" required
-                        autocomplete="current-password" placeholder="••••••••">
-                    @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}"
-                        class="small position-absolute end-0 top-100 mt-1 text-decoration-none">
-                        {{ __('Forgot your password?') }}
-                    </a>
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{{ __('Password') }}</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                required autocomplete="current-password" placeholder="••••••••">
+                            @if (Route::has('password.request'))
+                                <div class="mt-2 text-end">
+                                    <a href="{{ route('password.request') }}" class="text-decoration-none small text-primary">
+                                        {{ __('Forgot your password?') }}
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Remember Me -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="remember_me" name="remember">
+                            <label class="form-check-label" for="remember_me">
+                                {{ __('Remember me') }}
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                {{ __('Log in') }}
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Register Link -->
+                    @if (Route::has('register'))
+                        <div class="text-center mt-3 text-muted small">
+                            {{ __('Don\'t have an account?') }}
+                            <a href="{{ route('register') }}" class="text-decoration-none fw-medium text-primary">
+                                {{ __('Sign up') }}
+                            </a>
+                        </div>
                     @endif
                 </div>
-
-                <!-- Remember Me -->
-                <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" id="remember_me" name="remember">
-                    <label class="form-check-label" for="remember_me">
-                        {{ __('Remember me') }}
-                    </label>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="d-grid mb-3">
-                    <button type="submit" class="btn btn-primary">
-                        {{ __('Log in') }}
-                    </button>
-                </div>
-            </form>
-
-            <!-- Register Link -->
-            @if (Route::has('register'))
-            <div class="text-center text-muted small">
-                {{ __('Don\'t have an account?') }}
-                <a href="{{ route('register') }}" class="text-decoration-none fw-medium">
-                    {{ __('Sign up') }}
-                </a>
             </div>
-            @endif
         </div>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/js/lazyload.js') }}"></script>

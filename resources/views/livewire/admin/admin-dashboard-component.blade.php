@@ -12,30 +12,29 @@
     </div>
   </div>
 
-  <!-- KPI Widgets -->
   <div class="row mb-30">
     <div class="col-lg-3 col-sm-6 mb-3">
       <div class="card-box bg-white shadow-sm p-3 text-center rounded">
         <h5>Total Captures</h5>
-        <div id="widget-total-captures" class="h3 text-primary">256</div>
+        <div class="h3 text-primary">{{ $totalCaptures }}</div>
       </div>
     </div>
     <div class="col-lg-3 col-sm-6 mb-3">
       <div class="card bg-white shadow-sm p-3 text-center rounded">
         <h5>Registered Vehicles</h5>
-        <div id="widget-registered" class="h3 text-success">230</div>
+        <div class="h3 text-success">{{ $registeredPlates }}</div>
       </div>
     </div>
     <div class="col-lg-3 col-sm-6 mb-3">
       <div class="card bg-white shadow-sm p-3 text-center rounded">
         <h5>Unregistered Plates</h5>
-        <div id="widget-unregistered" class="h3 text-danger">26</div>
+        <div class="h3 text-danger">{{ $unregisteredPlates }}</div>
       </div>
     </div>
     <div class="col-lg-3 col-sm-6 mb-3">
       <div class="card bg-white shadow-sm p-3 text-center rounded">
         <h5>Entries Today</h5>
-        <div id="widget-today" class="h3 text-info">54</div>
+        <div class="h3 text-info">{{ $todayEntries }}</div>
       </div>
     </div>
   </div>
@@ -45,13 +44,17 @@
     <div class="col-xl-8 mb-3">
       <div class="card-box height-100-p pd-20 shadow-sm rounded">
         <h2 class="h4 mb-20">Capture Trend (Last 7 Days)</h2>
-        <div id="chart5"></div>
+        <div wire:ignore>
+          <canvas id="captureTrendChart" height="300"></canvas>
+        </div>
       </div>
     </div>
     <div class="col-xl-4 mb-3">
       <div class="card-box height-100-p pd-20 shadow-sm rounded">
         <h2 class="h5 mb-20">Registration Status Breakdown</h2>
-        <div id="chart6"></div>
+        <div wire:ignore>
+          <canvas id="registrationStatusChart" height="300"></canvas>
+        </div>
       </div>
     </div>
   </div>
@@ -75,17 +78,110 @@
           </tr>
         </thead>
         <tbody>
+          @foreach($recentScans as $scan)
           <tr>
-            <td>#1021</td>
-            <td>ABC123AB</td>
-            <td>2025‑07‑26 08:15 AM</td>
-            <td><span class="badge badge-success">Registered</span></td>
-            <td>Scanner 1</td>
-            <td><img src="{{ asset('storage/img/plates/20250726_0815_plate.jpg') }}" alt="plate" class="rounded" style="max-width: 60px;"></td>
+            <td>#{{ $scan->id }}</td>
+            <td>{{ $scan->plate ?? 'N/A' }}</td>
+            <td>{{ $scan->created_at->format('Y-m-d h:i A') }}</td>
+            <td>
+              <span class="badge badge-{{ $scan->plate ? 'success' : 'danger' }}">
+                {{ $scan->plate ? 'Registered' : 'Unregistered' }}
+              </span>
+            </td>
+            <td>
+              @if($scan->user)
+              {{ $scan->user->firstname }} ({{ $scan->user->service_number }})
+              @else
+              System
+              @endif
+            </td>
+            <td>
+              @if($scan->image_path)
+              <img src="{{ asset( $scan->image_path) }}" alt="plate" class="rounded" style="max-width: 60px;">
+              @else
+              N/A
+              @endif
+            </td>
           </tr>
-          <!-- More rows here -->
+          @endforeach
         </tbody>
       </table>
     </div>
   </div>
+
+  @push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('livewire:init', () => {
+    // Capture Trend Chart
+    const trendCtx = document.getElementById('captureTrendChart').getContext('2d');
+    const trendChart = new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: @json($trendLabels),
+            datasets: [{
+                label: 'Plate Captures',
+                data: @json($trendData),
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // Registration Status Chart
+    const statusCtx = document.getElementById('registrationStatusChart').getContext('2d');
+    const statusChart = new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Registered', 'Unregistered'],
+            datasets: [{
+                data: [{{ $registeredPlates }}, {{ $unregisteredPlates }}],
+                backgroundColor: [
+                    'rgba(40, 167, 69, 0.8)',
+                    'rgba(220, 53, 69, 0.8)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    // Refresh charts when Livewire updates
+    Livewire.on('updateCharts', () => {
+        trendChart.data.labels = @json($trendLabels);
+        trendChart.data.datasets[0].data = @json($trendData);
+        trendChart.update();
+        
+        statusChart.data.datasets[0].data = [{{ $registeredPlates }}, {{ $unregisteredPlates }}];
+        statusChart.update();
+    });
+});
+  </script>
+  @endpush
+
 </div>

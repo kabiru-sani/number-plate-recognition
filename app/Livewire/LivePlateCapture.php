@@ -12,63 +12,191 @@ class LivePlateCapture extends Component
 {
     use WithFileUploads;
 
-    public $liveImage;      // Holds the captured image blob
-    public $scanResult = []; // Holds latest scan results
+    public $scanResult;
+    public $isScanning = false;
+    public $detectionActive = false;
+    public $lastCaptureTime = 0;
+    public $captureInterval = 2000; // milliseconds between captures
+    public $cameraError = null;
 
-    protected $listeners = ['processLiveCapture'];
+    protected $listeners = [
+        'initializeCamera' => 'initializeCamera',
+        'processLiveCapture' => 'processImage',
+        'scan-error' => 'handleScanError'
+    ];
 
-    public function processLiveCapture($base64Blob)
+    public function mount()
     {
-        // 1. Decode base64 blob
-        $img = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Blob));
-        
-        // 2. Define new filename and public path
-        $filename = time() . '_live_capture.jpg';
-        $relativePath = 'assets/img/plates/' . $filename;
-        $fullPath = public_path($relativePath);
+        $this->lastCaptureTime = now()->timestamp * 1000;
+    }
 
-        // 3. Ensure directory exists
-        if (!file_exists(dirname($fullPath))) {
-            mkdir(dirname($fullPath), 0755, true);
-        }
+    public function initializeCamera()
+    {
+        $this->dispatch('start-camera');
+    }
 
-        // 4. Save file manually to public path
-        file_put_contents($fullPath, $img);
+    // public function processImage($imageData)
+    // {
+    //     if (!$this->detectionActive || $this->isScanning) {
+    //         return;
+    //     }
 
-        // 5. Call PlateRecognizer API
-        $response = Http::withHeaders([
-            'Authorization' => 'Token ' . env('PLATE_RECOGNIZER_TOKEN'),
-        ])->attach(
-            'upload',
-            $img,
-            $filename
-        )->post('https://api.platerecognizer.com/v1/plate-reader/');
+    //     $now = now()->timestamp * 1000;
+    //     if (($now - $this->lastCaptureTime) < $this->captureInterval) {
+    //         return;
+    //     }
 
-        if ($response->failed()) {
-            $this->addError('photo', 'Scan failed, please try again.');
+    //     $this->isScanning = true;
+    //     $this->lastCaptureTime = $now;
+    //     $this->cameraError = null;
+
+    //     try {
+    //         $imageData = str_replace('data:image/jpeg;base64,', '', $imageData);
+    //         $imageBinary = base64_decode($imageData);
+            
+    //         if (!$imageBinary) {
+    //             throw new \Exception('Failed to decode image');
+    //         }
+
+    //         $filename = 'capture_' . time() . '.jpg';
+    //         $directory = 'public/assets/img/plates';
+    //         $relativePath = "assets/img/plates/$filename";
+    //         $fullPath = "$directory/$filename";
+
+    //         Storage::makeDirectory($directory);
+    //         Storage::put($fullPath, $imageBinary);
+
+    //         $response = Http::withHeaders([
+    //             'Authorization' => 'Token ' . env('PLATE_RECOGNIZER_TOKEN'),
+    //         ])->attach('upload', Storage::get($fullPath), $filename)
+    //         ->post('https://api.platerecognizer.com/v1/plate-reader/');
+
+    //         if ($response->failed()) {
+    //             throw new \Exception('API request failed: ' . $response->status());
+    //         }
+
+    //         $data = $response->json();
+            
+    //         if (empty($data['results'])) {
+    //             throw new \Exception('No plate detected in image');
+    //         }
+
+    //         $plate = $data['results'][0]['plate'] ?? 'N/A';
+    //         $score = $data['results'][0]['score'] ?? 0;
+
+    //         PlateScan::create([
+    //             'user_id' => auth()->id(),
+    //             'plate' => $plate,
+    //             'score' => $score,
+    //             'image_path' => $relativePath,
+    //             'raw_response' => json_encode($data),
+    //             'auto_captured' => true,
+    //         ]);
+
+    //         $this->scanResult = [
+    //             'plate' => $plate,
+    //             'score' => $score,
+    //             'image_url' => asset($relativePath),
+    //         ];
+
+    //     } catch (\Exception $e) {
+    //         $this->cameraError = $e->getMessage();
+    //         $this->dispatch('scan-error', message: $e->getMessage());
+    //     } finally {
+    //         $this->isScanning = false;
+    //     }
+    // }
+
+    public function processImage($imageData)
+    {
+        if (!$this->detectionActive || $this->isScanning) {
             return;
         }
 
-        $data = $response->json();
-        $plate = data_get($data, 'results.0.plate', 'N/A');
-        $score = round(data_get($data, 'results.0.score', 0) * 100, 2);
+        $now = now()->timestamp * 1000;
+        if (($now - $this->lastCaptureTime) < $this->captureInterval) {
+            return;
+        }
 
-        // 6. Store record in DB
-        PlateScan::create([
-            'user_id'      => auth()->id(),
-            'plate'        => $plate,
-            'score'        => $score,
-            'image_path'   => $relativePath, // so it works with asset()
-            'raw_response' => json_encode($data),
-        ]);
+        $this->isScanning = true;
+        $this->lastCaptureTime = $now;
+        $this->cameraError = null;
 
-        // 7. Update UI
-        $this->scanResult = [
-            'plate'     => $plate,
-            'score'     => $score,
-            'image_url' => asset($relativePath),
-        ];
+        try {
+            $imageData = str_replace('data:image/jpeg;base64,', '', $imageData);
+            $imageBinary = base64_decode($imageData);
+            
+            if (!$imageBinary) {
+                throw new \Exception('Failed to decode image');
+            }
+
+            // Generate filename with timestamp
+            $filename = time() . '_captured_plate.jpg';
+            $relativePath = 'assets/img/plates/' . $filename;
+            $fullPath = public_path($relativePath);
+
+            // Create directory if it doesn't exist
+            if (!file_exists(dirname($fullPath))) {
+                mkdir(dirname($fullPath), 0755, true);
+            }
+
+            // Save the image directly to public directory
+            file_put_contents($fullPath, $imageBinary);
+
+            // Send to PlateRecognizer
+            $response = Http::withHeaders([
+                'Authorization' => 'Token ' . env('PLATE_RECOGNIZER_TOKEN'),
+            ])->attach('upload', file_get_contents($fullPath), $filename)
+            ->post('https://api.platerecognizer.com/v1/plate-reader/');
+
+            if ($response->failed()) {
+                throw new \Exception('API request failed: ' . $response->status());
+            }
+
+            $data = $response->json();
+            
+            if (empty($data['results'])) {
+                throw new \Exception('No plate detected in image');
+            }
+
+            $plate = $data['results'][0]['plate'] ?? 'N/A';
+            $score = $data['results'][0]['score'] ?? 0;
+
+            PlateScan::create([
+                'user_id' => auth()->id(),
+                'plate' => $plate,
+                'score' => $score,
+                'image_path' => $relativePath,
+                'raw_response' => json_encode($data),
+                'auto_captured' => true,
+            ]);
+
+            $this->scanResult = [
+                'plate' => $plate,
+                'score' => $score,
+                'image_url' => asset($relativePath),
+            ];
+
+        } catch (\Exception $e) {
+            $this->cameraError = $e->getMessage();
+            $this->dispatch('scan-error', message: $e->getMessage());
+        } finally {
+            $this->isScanning = false;
+        }
     }
+
+
+    public function toggleDetection()
+    {
+        $this->detectionActive = !$this->detectionActive;
+        $this->dispatch('detection-toggled', active: $this->detectionActive);
+    }
+
+    public function handleScanError($message)
+    {
+        $this->cameraError = $message['message'] ?? $message;
+    }
+
 
     
     public function render()

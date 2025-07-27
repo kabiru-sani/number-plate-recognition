@@ -16,12 +16,38 @@ class PlateScanner extends Component
 
     public $photo;
     public $scanResult;
+    public $uploadProgress = 0;
+
+     protected $rules = [
+        'photo' => 'required|image|max:2048', // 2MB max
+    ];
+
+     public function updatedPhoto()
+    {
+        $this->validate(['photo' => 'image|max:2048']);
+        $this->uploadProgress = 0;
+        
+        // Real implementation would hook into Livewire's upload events
+        $this->simulateUpload();
+    }
+
+    protected function simulateUpload()
+    {
+        foreach (range(10, 100, 10) as $percent) {
+            usleep(300000); // 0.3s delay between updates
+            $this->uploadProgress = $percent;
+            $this->dispatch('upload-progress', ['progress' => $percent]);
+        }
+    }
 
     public function scanPlate()
     {
         $this->validate([
             'photo' => 'required|image|max:2048',
         ]);
+
+         // Simulate processing time
+        sleep(2);
 
         $filename = time() . '_' . $this->photo->getClientOriginalName();
         $relativePath = 'assets/img/plates/' . $filename;
@@ -62,6 +88,8 @@ class PlateScanner extends Component
             'score' => $score,
             'image_path' => $relativePath,
         ];
+
+        $this->uploadProgress = 0;
     }
 
     public function render()

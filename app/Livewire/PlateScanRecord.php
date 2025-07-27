@@ -26,6 +26,11 @@ class PlateScanRecord extends Component
         $this->dispatch('show-scan-modal');
     }
 
+    public function closeModal()
+    {
+        $this->dispatch('close-modal');
+    }
+
     public function render()
     {
         $history = PlateScan::where('user_id', auth()->id())

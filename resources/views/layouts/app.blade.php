@@ -47,7 +47,6 @@
     </style>
     <div id="simple-loader" class="d-flex flex-column justify-content-center align-items-center vh-100 bg-white">
         <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
-            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
 
@@ -62,7 +61,7 @@
             
 			{{ $slot }}
 
-			<div class="footer-wrap pd-20 mb-20 card-box">
+			<div class="footer-wrap pd-20 mb-20 card-box mt-5">
                 <script>document.write(new Date().getFullYear())</script> ©  Flexi Pay.
 			</div>
 		</div>

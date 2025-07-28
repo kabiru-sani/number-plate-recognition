@@ -164,14 +164,14 @@
                                         <i class="fa fa-car me-1"></i> Detected
                                     </div>
                                 </div>
-                                <div class="mt-5">
+                                {{-- <div class="mt-5">
                                     <button class="btn btn-sm btn-outline-primary me-2">
                                         <i class="fas fa-download me-1"></i> Download
                                     </button>
                                     <button class="btn btn-sm btn-outline-secondary">
                                         <i class="fas fa-redo me-1"></i> Rescan
                                     </button>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

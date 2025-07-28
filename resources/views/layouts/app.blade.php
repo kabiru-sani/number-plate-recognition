@@ -66,7 +66,7 @@
 			{{ $slot }}
 
 			<div class="footer-wrap pd-20 mb-20 card-box mt-5">
-                <script>document.write(new Date().getFullYear())</script> ©  Flexi Pay.
+               © <script>document.write(new Date().getFullYear())</script> <a href="#">NDA </a>, All Right Reserved. By: Chikezie Ejika.
 			</div>
 		</div>
 	</div>

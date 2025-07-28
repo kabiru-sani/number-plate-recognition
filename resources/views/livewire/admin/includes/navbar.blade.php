@@ -3,12 +3,12 @@
         @if(Auth::user()->role=='admin')
             <a href="{{ route('admin.dashboard') }}">
                 <img src="{{ asset('admin/vendors/images/nda-logo2.png') }}" alt="" class="dark-logo">
-                <img src="{{ asset('admin/vendors/images/nda-logo2.png') }}" alt="" class="light-logo">
+                <img src="{{ asset('admin/vendors/images/nda-logo-white.png') }}" alt="" class="light-logo">
             </a>
         @else
             <a href="{{ route('staff.dashboard') }}">
                 <img src="{{ asset('admin/vendors/images/nda-logo2.png') }}" alt="" class="dark-logo">
-                <img src="{{ asset('admin/vendors/images/nda-logo2.png') }}" alt="" class="light-logo">
+                <img src="{{ asset('admin/vendors/images/nda-logo-white.png') }}" alt="" class="light-logo">
             </a>
         @endif
         <div class="close-sidebar" data-toggle="left-sidebar-close">

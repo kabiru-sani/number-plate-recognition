@@ -1,9 +1,13 @@
-<!-- <div style="color: #92210f" class="la-ball-scale-ripple-multiple la-2x">
-<div></div>
-<div></div>
-<div></div>
-</div> -->
-<div class="newLoader"></div>
+{{-- <div class="newLoader"></div> --}}
+{{-- <div wire:loading wire:target="{{ $target }}" class="newLoader"></div> --}}
+@props(['target' => null])
+
+<div 
+    wire:loading 
+    @if ($target) wire:target="{{ $target }}" @endif 
+    class="newLoader">
+</div>
+
 
 <style>
 .newLoader {

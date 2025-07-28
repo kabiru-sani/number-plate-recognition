@@ -17,4 +17,9 @@ class PlateScan extends Model
     public function user(){
         return $this->belongsTo(User::class,'user_id');
     }
+
+    public function entranceHistories()
+    {
+        return $this->hasMany(EntranceHistory::class);
+    }
 }

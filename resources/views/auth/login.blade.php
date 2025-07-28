@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
 
-    <title>{{ $title ?? 'Flexi Pay' }}</title>
+    <title>{{ $title ?? 'NDA' }}</title>
 
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
@@ -14,25 +14,25 @@
     <meta property="og:type" content="website">
     <meta property="og:locale" content="en_NG">
     <meta property="og:url" content="{{ \URL::current() }}">
-    <meta property="og:title" content="{{ $title ?? 'Flexi Pay' }}">
-    <meta property="og:description" content="{{ $description ?? 'Flexi Pay About info' }}">
+    <meta property="og:title" content="{{ $title ?? 'NDA' }}">
+    <meta property="og:description" content="{{ $description ?? 'NDA About info' }}">
     <meta property="og:image" content="{{ $logo ?? asset('assets/img/Meta-logo.png') }}">
 
     <meta property="twitter:type" content="website">
     <meta property="twitter:locale" content="en_NG">
     <meta property="twitter:url" content="{{ \URL::current() }}">
-    <meta property="twitter:title" content="{{ $title ?? 'Flexi Pay' }}">
-    <meta property="twitter:description" content="{{ $description ?? 'Flexi Pay About info' }}">
+    <meta property="twitter:title" content="{{ $title ?? 'NDA' }}">
+    <meta property="twitter:description" content="{{ $description ?? 'NDA About info' }}">
     <meta property="twitter:image" content="{{ $logo ?? asset('assets/img/Meta-logo.png') }}">
 
     <meta name="google:card" content="summary_large_image">
     <meta name="google:url" content="{{ \URL::current() }}">
-    <meta name="google:description" content="{{ $description ?? 'Flexi Pay About info' }}">
-    <meta name="google:title" content="{{ $title ?? 'Flexi Pay' }}">
+    <meta name="google:description" content="{{ $description ?? 'NDA About info' }}">
+    <meta name="google:title" content="{{ $title ?? 'NDA' }}">
     <meta name="google:image" content="{{ $logo ?? asset('assets/img/Meta-logo.png') }}">
 
-    <meta name="description" content="{{ $description ?? 'Flexi Pay.' }}" />
-    <meta name="author" content="Flexi Pay" />
+    <meta name="description" content="{{ $description ?? 'NDA.' }}" />
+    <meta name="author" content="NDA" />
     <meta name="url" content="{{ \URL::current() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="keywords"

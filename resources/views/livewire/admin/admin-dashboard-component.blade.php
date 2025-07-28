@@ -42,7 +42,7 @@
   <!-- Charts -->
   <div class="row mb-30">
     <div class="col-xl-8 mb-3">
-      <div class="card-box height-100-p pd-20 shadow-sm rounded">
+      <div class="card-box height-60-p pd-20 shadow-sm rounded">
         <h2 class="h4 mb-20">Capture Trend (Last 7 Days)</h2>
         <div wire:ignore>
           <canvas id="captureTrendChart" height="300"></canvas>
@@ -50,7 +50,7 @@
       </div>
     </div>
     <div class="col-xl-4 mb-3">
-      <div class="card-box height-100-p pd-20 shadow-sm rounded">
+      <div class="card-box height-80-p pd-20 shadow-sm rounded">
         <h2 class="h5 mb-20">Registration Status Breakdown</h2>
         <div wire:ignore>
           <canvas id="registrationStatusChart" height="300"></canvas>

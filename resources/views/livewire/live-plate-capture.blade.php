@@ -37,16 +37,16 @@
 
         <!-- Controls -->
         <div class="mt-4 flex justify-center space-x-3">
-            <button class="btn {{ $detectionActive ? 'btn-danger' : 'btn-primary' }}" 
+            <button class="btn {{ $detectionActive ? 'btn-danger' : 'btn-success' }}" 
                     wire:click="toggleDetection"
                     wire:loading.attr="disabled">
-                <i class="fas {{ $detectionActive ? 'fa-pause' : 'fa-play' }} mr-2"></i>
+                <i class="fa {{ $detectionActive ? 'fa-pause' : 'fa-play' }} mr-2"></i>
                 {{ $detectionActive ? 'Pause Detection' : 'Start Detection' }}
             </button>
             
-            <button class="btn btn-secondary" id="manualCaptureBtn"
+            <button class="btn btn-primary" id="manualCaptureBtn"
                     wire:loading.attr="disabled">
-                <i class="fas fa-camera mr-2"></i> Manual Capture
+                <i class="fa fa-camera mr-2"></i> Manual Capture
             </button>
         </div>
 

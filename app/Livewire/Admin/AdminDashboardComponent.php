@@ -41,7 +41,7 @@ class AdminDashboardComponent extends Component
         // Recent scans
         $this->recentScans = PlateScan::with('user')
             ->latest()
-            ->take(10)
+            ->take(5)
             ->get();
     }
 

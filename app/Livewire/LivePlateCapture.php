@@ -7,6 +7,7 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use App\Models\PlateScan;
+use App\Models\EntranceHistory;
 
 class LivePlateCapture extends Component
 {
@@ -90,19 +91,42 @@ class LivePlateCapture extends Component
             $plate = $data['results'][0]['plate'] ?? 'N/A';
             $score = $data['results'][0]['score'] ?? 0;
 
-            PlateScan::create([
+            // Check if plate exists in database
+            $existingPlate = PlateScan::where('plate', $plate)->first();
+            $this->existingRecord = $existingPlate ? true : false;
+
+            $scanRecord = PlateScan::create([
                 'user_id' => auth()->id(),
                 'plate' => $plate,
                 'score' => $score,
                 'image_path' => $relativePath,
                 'raw_response' => json_encode($data),
                 'auto_captured' => true,
+                'is_duplicate' => $this->existingRecord,
             ]);
+
+             // Add to entrance history regardless of whether it's a duplicate
+            EntranceHistory::create([
+                'plate_scan_id' => $scanRecord->id,
+                'scanned_at' => now(),
+                'gate_location' => 'Main Entrance Gate',
+            ]);
+
+            // If it's a duplicate, get the frequency count
+            $visitCount = 0;
+            if ($this->existingRecord) {
+                $visitCount = EntranceHistory::whereHas('plateScan', function($query) use ($plate) {
+                    $query->where('plate', $plate);
+                })->count();
+            }
 
             $this->scanResult = [
                 'plate' => $plate,
                 'score' => $score,
                 'image_url' => asset($relativePath),
+                //  'image_path' => $relativePath,
+                'existing_record' => $this->existingRecord,
+                'visit_count' => $visitCount,
             ];
 
         } catch (\Exception $e) {

@@ -1,4 +1,4 @@
-<div wire:ignore.self class="modal fade" id="scanModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="scanModal" tabindex="-1" data-bs-backdrop="none" data-bs-keyboard="false" wire:ignore.self>
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             @if ($selectedScan)
@@ -7,7 +7,7 @@
                         <i class="fa fa-car me-2"></i>
                             Plate Scan Details
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="window.dispatchEvent(new Event('submit'))">X</button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="row">
@@ -79,12 +79,9 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" onclick="window.dispatchEvent(new Event('submit'))" data-bs-dismiss="modal">
                         <i class="fa fa-times me-1"></i> Close
                     </button>
-                    {{-- <button type="button" class="btn btn-primary">
-                        <i class="fa fa-download me-1"></i> Export Report
-                    </button> --}}
                 </div>
             @endif
         </div>
@@ -92,6 +89,11 @@
 </div>
 
 @push('scripts')
+<script>
+    window.addEventListener('submit', event => {
+        document.getElementById("scanModal").click();
+    })
+</script>
 <script>
   window.addEventListener('show-scan-modal', () => {
     const modal = new bootstrap.Modal(document.getElementById('scanModal'));

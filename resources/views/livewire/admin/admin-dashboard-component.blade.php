@@ -81,7 +81,7 @@
           @foreach($recentScans as $scan)
           <tr>
             <td>#{{ $scan->id }}</td>
-            <td>{{ $scan->plate ?? 'N/A' }}</td>
+            <td>{{ strtoupper($scan->plate ?? 'N/A') }}</td>
             <td>{{ $scan->created_at->format('Y-m-d h:i A') }}</td>
             <td>
               <span class="badge badge-{{ $scan->plate ? 'success' : 'danger' }}">

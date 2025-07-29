@@ -4,7 +4,7 @@
 
         @if($cameraError)
             <div class="alert alert-danger mb-4">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <i class="fa fa-exclamation-triangle mr-2"></i>
                 {{ $cameraError }}
             </div>
         @endif
@@ -50,35 +50,83 @@
             </button>
         </div>
 
-        <!-- Scan Results -->
         @if($scanResult)
-        <div class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h5 class="font-semibold">Plate Number:</h5>
-                    <p class="text-2xl font-bold text-blue-600">{{ $scanResult['plate'] }}</p>
-                    
-                    <h5 class="font-semibold mt-2">Confidence:</h5>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5">
-                        <div class="bg-green-600 h-2.5 rounded-full" 
-                             style="width: {{ $scanResult['score'] * 100 }}%"></div>
+            <div class="card shadow-sm rounded-lg mt-4">
+            <div class="card-body p-4">
+                <div class="row">
+                <!-- Left: Scan Details -->
+                <div class="col-md-7">
+                    <h4 class="fw-bold text-primary mb-4">Scan Results</h4>
+
+                    <!-- Plate Detected Badge -->
+                    <div class="d-flex align-items-center mb-4">
+                    <span class="badge bg-success me-3"><i class="fa fa-check-circle"></i> Plate Detected</span>
+                    <small class="text-muted">License plate recognized</small>
                     </div>
-                    <p class="text-sm text-gray-600">{{ round($scanResult['score'] * 100, 1) }}%</p>
+
+                    <!-- License Plate -->
+                    <div class="mb-4">
+                    <label class="form-label text-secondary mb-1">License Plate Number</label>
+                    <div class="display-4 fw-bold text-dark">{{ strtoupper($scanResult['plate']) }}</div>
+                    </div>
+
+                    <!-- Confidence Bar -->
+                    <div class="mb-4">
+                    <label class="form-label text-secondary mb-1">Confidence Score</label>
+                    <div class="d-flex align-items-center">
+                        <strong class="me-3">{{ round($scanResult['score'] * 100, 2) }}%</strong>
+                        <div class="progress flex-grow-1" style="height: 8px;">
+                        <div class="progress-bar {{ $scanResult['score'] >= 0.8 ? 'bg-success' : ($scanResult['score'] >= 0.5 ? 'bg-warning' : 'bg-danger') }}"
+                            role="progressbar"
+                            style="width: {{ $scanResult['score'] * 100 }}%">
+                        </div>
+                        </div>
+                    </div>
+                    <small class="text-muted mt-1 d-block">Higher percentage indicates more accurate recognition</small>
+                    </div>
+
+                    <!-- Visit Info -->
+                    @if(!empty($scanResult['existing_record']))
+                    <div class="alert alert-warning d-flex align-items-center">
+                    <i class="fa fa-info-circle fa-lg me-2"></i>
+                    <div>
+                        This vehicle was detected before. Total entries:
+                        <strong>{{ $scanResult['visit_count'] }}</strong>
+                    </div>
+                    </div>
+                    @else
+                    <div class="alert alert-success d-flex align-items-center">
+                    <i class="fa fa-thumbs-up fa-lg me-2"></i>
+                    <div>First‑time detection of this vehicle.</div>
+                    </div>
+                    @endif
                 </div>
-                
-                <img src="{{ $scanResult['image_url'] }}" 
-                     class="w-32 h-24 object-cover rounded border" 
-                     alt="Captured Plate">
-            </div>
-            
-            <div class="mt-3 text-right">
-                <button class="text-sm text-blue-600 hover:underline" 
-                        wire:click="$set('scanResult', null)">
-                    Clear Results
+
+                <!-- Right: Plate Image -->
+                <div class="col-md-5 text-center">
+                    <div class="position-relative d-inline-block">
+                    <img src="{{ asset($scanResult['image_url']) }}"
+                        class="img-fluid rounded border"
+                        style="max-height: 240px;"
+                        alt="Scanned Plate">
+                    <div class="position-absolute top-2 start-2 bg-success text-white small px-2 py-1 rounded">
+                        <i class="fa fa-camera fa-sm"></i> Detected
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Clear / New Scan Button -->
+                <div class="text-end mt-4">
+                <button wire:click="$set('scanResult', null)"
+                        class="btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-redo"></i> New Scan
                 </button>
+                </div>
             </div>
-        </div>
+            </div>
         @endif
+
     </div>
 
     @push('scripts')

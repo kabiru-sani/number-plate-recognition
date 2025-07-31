@@ -34,21 +34,84 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Controls -->
-        <div class="mt-4 flex justify-center space-x-3">
-            <button class="btn {{ $detectionActive ? 'btn-danger' : 'btn-success' }}" 
+        <div class="mt-4 flex justify-center align-items-center gap-3">
+            <!-- Custom Toggle Switch -->
+            <div class="toggle-switch">
+                <input type="checkbox" class="toggle-switch-checkbox" 
+                    id="detectionToggle"
                     wire:click="toggleDetection"
-                    wire:loading.attr="disabled">
-                <i class="fa {{ $detectionActive ? 'fa-pause' : 'fa-play' }} mr-2"></i>
-                {{ $detectionActive ? 'Pause Detection' : 'Start Detection' }}
-            </button>
+                    wire:loading.attr="disabled"
+                    {{ $detectionActive ? 'checked' : '' }}>
+                <label class="toggle-switch-label" for="detectionToggle">
+                    <span class="toggle-switch-inner"></span>
+                    <span class="toggle-switch-switch"></span>
+                </label>
+                <span class="toggle-switch-text ms-2">
+                    {{ $detectionActive ? 'Pause Detection' : 'Start Detection' }}
+                </span>
+            </div>
             
+            <!-- Manual Capture Button -->
             <button class="btn btn-primary" id="manualCaptureBtn"
                     wire:loading.attr="disabled">
-                <i class="fa fa-camera mr-2"></i> Manual Capture
+                <i class="fa fa-camera me-2"></i> Manual Capture
             </button>
         </div>
+
+        <style>
+            .toggle-switch {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+            }
+            
+            .toggle-switch-checkbox {
+                display: none;
+            }
+            
+            .toggle-switch-label {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+            
+            .toggle-switch-inner {
+                width: 50px;
+                height: 26px;
+                background: #ba0d0d;
+                border-radius: 13px;
+                position: relative;
+                transition: background 0.3s ease;
+            }
+            
+            .toggle-switch-switch {
+                position: absolute;
+                width: 22px;
+                height: 22px;
+                background: white;
+                border-radius: 50%;
+                top: 2px;
+                left: 2px;
+                transition: transform 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+            
+            .toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-inner {
+                background: #077e03; /* Bootstrap primary color */
+            }
+            
+            .toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-switch {
+                transform: translateX(24px);
+            }
+            
+            /* Disabled state */
+            .toggle-switch-checkbox:disabled + .toggle-switch-label {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+        </style>
 
         @if($scanResult)
             <div class="card shadow-sm rounded-lg mt-4">
@@ -130,152 +193,153 @@
     </div>
 
     @push('scripts')
-    <script>
-        // Camera elements
-        const video = document.getElementById('liveCamera');
-        const canvas = document.createElement('canvas');
-        const detectionBox = document.getElementById('detectionBox');
-        const manualCaptureBtn = document.getElementById('manualCaptureBtn');
-        
-        // Camera stream
-        let stream = null;
-        let detectionInterval = null;
-        let lastCaptureTime = 0;
-        const captureInterval = {{ $captureInterval }};
-        
-        // Initialize camera
-        async function startCamera() {
-            try {
+        <script>
+            // Camera elements
+            const video = document.getElementById('liveCamera');
+            const canvas = document.createElement('canvas');
+            const detectionBox = document.getElementById('detectionBox');
+            const manualCaptureBtn = document.getElementById('manualCaptureBtn');
+            
+            // Camera stream
+            let stream = null;
+            let detectionInterval = null;
+            let lastCaptureTime = 0;
+            const captureInterval = {{ $captureInterval }};
+            
+            // Initialize camera
+            async function startCamera() {
+                try {
+                    stopCamera();
+                    
+                    const constraints = {
+                        video: { 
+                            facingMode: 'environment',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        } 
+                    };
+                    
+                    stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    video.srcObject = stream;
+                    
+                    return true;
+                } catch (err) {
+                    console.error('Camera error:', err);
+                    Livewire.dispatch('scan-error', {message: 'Could not access camera: ' + err.message});
+                    return false;
+                }
+            }
+            
+            // Stop camera stream
+            function stopCamera() {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                stopDetection();
+            }
+            
+            // Start plate detection
+            function startDetection() {
+                stopDetection();
+                detectionInterval = setInterval(detectPlate, 1000);
+            }
+            
+            // Stop plate detection
+            function stopDetection() {
+                if (detectionInterval) {
+                    clearInterval(detectionInterval);
+                    detectionInterval = null;
+                }
+                detectionBox.classList.add('hidden');
+            }
+            
+            // Capture image and send to Livewire
+            async function captureImage() {
+                if (!stream) return;
+                
+                const now = Date.now();
+                if ((now - lastCaptureTime) < captureInterval) {
+                    return;
+                }
+                lastCaptureTime = now;
+                
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                
+                const dataUrl = canvas.toDataURL('image/jpeg');
+                Livewire.dispatch('processLiveCapture', {imageData: dataUrl});
+                
+                // Visual feedback
+                video.style.opacity = '0.5';
+                setTimeout(() => video.style.opacity = '1', 200);
+            }
+            
+            // Manual capture function
+            async function manualCapture() {
+                await captureImage();
+            }
+            
+            // Simulate plate detection
+            function detectPlate() {
+                const detectionActive = @js($detectionActive);
+                if (!detectionActive) return;
+                
+                // Randomly show detection box to simulate plate detection
+                if (Math.random() > 0.7) {
+                    const width = 100 + Math.random() * 100;
+                    const height = 50 + Math.random() * 30;
+                    const left = Math.random() * (video.offsetWidth - width);
+                    const top = Math.random() * (video.offsetHeight - height);
+                    
+                    detectionBox.style.width = `${width}px`;
+                    detectionBox.style.height = `${height}px`;
+                    detectionBox.style.left = `${left}px`;
+                    detectionBox.style.top = `${top}px`;
+                    detectionBox.classList.remove('hidden');
+                    
+                    // Auto-capture when "detected"
+                    setTimeout(() => {
+                        detectionBox.classList.add('hidden');
+                        captureImage();
+                    }, 500);
+                }
+            }
+
+            // Event listeners
+            manualCaptureBtn.addEventListener('click', manualCapture);
+            
+            // Listen for Livewire events
+            document.addEventListener('livewire:init', () => {
+                Livewire.on('detection-toggled', ({ active }) => {
+                    if (active) {
+                        startDetection();
+                    } else {
+                        stopDetection();
+                    }
+                });
+                
+                Livewire.on('start-camera', async () => {
+                    await startCamera();
+                    if (@js($detectionActive)) {
+                        startDetection();
+                    }
+                });
+                
+                Livewire.on('scan-error', ({ message }) => {
+                    console.error('Scan error:', message);
+                });
+                
+                // Initialize camera after Livewire is ready
+                Livewire.dispatch('initializeCamera');
+            });
+            
+            // Clean up on page exit
+            document.addEventListener('livewire:before-unload', () => {
                 stopCamera();
-                
-                const constraints = {
-                    video: { 
-                        facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    } 
-                };
-                
-                stream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = stream;
-                
-                return true;
-            } catch (err) {
-                console.error('Camera error:', err);
-                Livewire.dispatch('scan-error', {message: 'Could not access camera: ' + err.message});
-                return false;
-            }
-        }
-        
-        // Stop camera stream
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-            stopDetection();
-        }
-        
-        // Start plate detection
-        function startDetection() {
-            stopDetection();
-            detectionInterval = setInterval(detectPlate, 1000);
-        }
-        
-        // Stop plate detection
-        function stopDetection() {
-            if (detectionInterval) {
-                clearInterval(detectionInterval);
-                detectionInterval = null;
-            }
-            detectionBox.classList.add('hidden');
-        }
-        
-        // Capture image and send to Livewire
-        async function captureImage() {
-            if (!stream) return;
-            
-            const now = Date.now();
-            if ((now - lastCaptureTime) < captureInterval) {
-                return;
-            }
-            lastCaptureTime = now;
-            
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            
-            const dataUrl = canvas.toDataURL('image/jpeg');
-            Livewire.dispatch('processLiveCapture', {imageData: dataUrl});
-            
-            // Visual feedback
-            video.style.opacity = '0.5';
-            setTimeout(() => video.style.opacity = '1', 200);
-        }
-        
-        // Manual capture function
-        async function manualCapture() {
-            await captureImage();
-        }
-        
-        // Simulate plate detection
-        function detectPlate() {
-            const detectionActive = @js($detectionActive);
-            if (!detectionActive) return;
-            
-            // Randomly show detection box to simulate plate detection
-            if (Math.random() > 0.7) {
-                const width = 100 + Math.random() * 100;
-                const height = 50 + Math.random() * 30;
-                const left = Math.random() * (video.offsetWidth - width);
-                const top = Math.random() * (video.offsetHeight - height);
-                
-                detectionBox.style.width = `${width}px`;
-                detectionBox.style.height = `${height}px`;
-                detectionBox.style.left = `${left}px`;
-                detectionBox.style.top = `${top}px`;
-                detectionBox.classList.remove('hidden');
-                
-                // Auto-capture when "detected"
-                setTimeout(() => {
-                    detectionBox.classList.add('hidden');
-                    captureImage();
-                }, 500);
-            }
-        }
-        
-        // Event listeners
-        manualCaptureBtn.addEventListener('click', manualCapture);
-        
-        // Listen for Livewire events
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('detection-toggled', ({ active }) => {
-                if (active) {
-                    startDetection();
-                } else {
-                    stopDetection();
-                }
             });
-            
-            Livewire.on('start-camera', async () => {
-                await startCamera();
-                if (@js($detectionActive)) {
-                    startDetection();
-                }
-            });
-            
-            Livewire.on('scan-error', ({ message }) => {
-                console.error('Scan error:', message);
-            });
-            
-            // Initialize camera after Livewire is ready
-            Livewire.dispatch('initializeCamera');
-        });
-        
-        // Clean up on page exit
-        document.addEventListener('livewire:before-unload', () => {
-            stopCamera();
-        });
-    </script>
+        </script>
     @endpush
+   
 </div>

@@ -13,7 +13,8 @@
 						<span class="user-name">{{ Auth::user()->name }}</span>
 					</a>
 					<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-						<a class="dropdown-item" href="{{ route('profile.show') }}"><i class="dw dw-user1"></i> Profile</a>
+						<a class="dropdown-item" href="{{ route('staff.profile') }}"><i class="dw dw-user1"></i> Profile</a>
+						{{-- <a class="dropdown-item" href="{{ route('change-password') }}"><i class="dw dw-settings"></i> Settings</a> --}}
 
 						<a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 							<i class="dw dw-logout"></i> Log Out

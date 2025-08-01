@@ -40,6 +40,19 @@ class User extends Authenticatable
         'profile_photo_path'
     ];
 
+    public function initials()
+    {
+        $name = $this->firstname.' '.$this->middlename.' '.$this->lastname;
+        $initials = '';
+        
+        $names = explode(' ', $name);
+        foreach ($names as $n) {
+            $initials .= strtoupper(substr($n, 0, 1));
+        }
+        
+        return $initials;
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

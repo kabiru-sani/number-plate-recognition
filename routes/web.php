@@ -19,6 +19,9 @@ use App\Livewire\Admin\Staff\ViewStaffComponent;
 
 use App\Livewire\Admin\ManageStaffApplicationComponent;
 
+use App\Livewire\Profile\ProfileComponent;
+use App\Livewire\Profile\ChangePasswordComponent;
+
 
 use App\Livewire\Staff\StaffDashboardComponent;
 
@@ -38,6 +41,9 @@ Route::get('/contact-us',ContactComponent::class)->name('contact');
 Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])->group(function () {
 
     Route::get('/dashboard',[ DashboardController::class,'dashboard'])->name('dashboard');
+
+    Route::get('/change-password',ChangePasswordComponent::class)->name('change-password');
+    Route::get('/staff-profile',ProfileComponent::class)->name('staff.profile');
 
     Route::middleware(['admin'])->prefix('admin')->group(function(){
         Route::get('/dashboard',AdminDashboardComponent::class)->name('admin.dashboard');

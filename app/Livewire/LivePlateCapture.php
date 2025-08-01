@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use App\Models\PlateScan;
 use App\Models\EntranceHistory;
+use App\Models\Owner;
+use Illuminate\Support\Str;
 
 class LivePlateCapture extends Component
 {
@@ -64,7 +66,7 @@ class LivePlateCapture extends Component
             $relativePath = 'assets/img/plates/' . $filename;
             $fullPath = public_path($relativePath);
 
-            // Create directory if it doesn't exist
+            // Create directory if it doesn't exist 
             if (!file_exists(dirname($fullPath))) {
                 mkdir(dirname($fullPath), 0755, true);
             }
@@ -95,6 +97,16 @@ class LivePlateCapture extends Component
             $existingPlate = PlateScan::where('plate', $plate)->first();
             $this->existingRecord = $existingPlate ? true : false;
 
+            // Get or generate owner
+            $faker = fake('en_NG');
+
+            $owner = $existingPlate ? $existingPlate->owner : Owner::create([
+                'name' => $faker->firstName . ' ' . $faker->lastName,
+                'email' => Str::slug($faker->firstName . $faker->lastName, '') . '@example.com',
+                'phone' => '080' . rand(10000000, 99999999), // Simulate common MTN format
+                'photo' => 'user.png',
+            ]);
+
             $scanRecord = PlateScan::create([
                 'user_id' => auth()->id(),
                 'plate' => $plate,
@@ -103,6 +115,7 @@ class LivePlateCapture extends Component
                 'raw_response' => json_encode($data),
                 'auto_captured' => true,
                 'is_duplicate' => $this->existingRecord,
+                'owner_id' => $owner->id,
             ]);
 
              // Add to entrance history regardless of whether it's a duplicate

@@ -12,6 +12,7 @@ class PlateScan extends Model
         'score',
         'image_path',
         'raw_response',
+        'owner_id',
     ];
 
     public function user(){
@@ -21,5 +22,10 @@ class PlateScan extends Model
     public function entranceHistories()
     {
         return $this->hasMany(EntranceHistory::class);
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(Owner::class,'owner_id');
     }
 }

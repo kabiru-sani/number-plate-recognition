@@ -43,7 +43,7 @@
                     </li>
                     <li class="nav-item {{ request()->routeIs('plate.scan.live') ? 'bg-success' : '' }}">
                         <a href="{{ route('plate.scan.live') }}" class="dropdown-toggle no-arrow">
-                            <span class="micon dw dw-search"></span><span class="mtext">Live Capture</span>
+                            <span class="micon fa fa-camera"></span><span class="mtext">Live Capture</span>
                         </a>
                     </li>
                 @else

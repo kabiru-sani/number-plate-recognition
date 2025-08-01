@@ -10,7 +10,7 @@
         @endif
 
         <!-- Camera Feed -->
-        <div class="relative bg-black rounded-lg overflow-hidden">
+        {{-- <div class="relative bg-black rounded-lg overflow-hidden">
             <video id="liveCamera" class="w-full h-auto" 
                    autoplay playsinline muted style="max-height:360px;"></video>
             
@@ -58,7 +58,54 @@
                     wire:loading.attr="disabled">
                 <i class="fa fa-camera me-2"></i> Manual Capture
             </button>
+        </div> --}}
+        <div class="relative bg-black rounded-lg overflow-hidden">
+            <video id="liveCamera" class="w-full h-auto" autoplay playsinline muted style="max-height:360px;"></video>
+
+            <!-- Detection overlay (optional visual box) -->
+            <div id="detectionBox" class="absolute border-2 border-green-500 hidden" style="pointer-events: none;"></div>
+
+            <!-- Status indicator -->
+            <div class="absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium
+                {{ $detectionActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                {{ $detectionActive ? 'DETECTING' : 'PAUSED' }}
+            </div>
+
+            <!-- Loading indicator -->
+            <div wire:loading wire:target="processImage" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div class="text-white text-center">
+                    <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Processing image...</p>
+                </div>
+            </div>
         </div>
+
+        <!-- Controls -->
+        <div class="mt-4 flex justify-center align-items-center gap-3">
+            <!-- Custom Toggle Switch -->
+            <div class="toggle-switch">
+                <input type="checkbox" class="toggle-switch-checkbox" 
+                    id="detectionToggle"
+                    wire:click="toggleDetection"
+                    wire:loading.attr="disabled"
+                    {{ $detectionActive ? 'checked' : '' }}>
+                <label class="toggle-switch-label" for="detectionToggle">
+                    <span class="toggle-switch-inner"></span>
+                    <span class="toggle-switch-switch"></span>
+                </label>
+                <span class="toggle-switch-text ms-2">
+                    {{ $detectionActive ? 'Pause Detection' : 'Start Detection' }}
+                </span>
+            </div>
+
+            <!-- Manual Capture (optional fallback) -->
+            <button class="btn btn-primary" id="manualCaptureBtn" wire:loading.attr="disabled">
+                <i class="fa fa-camera me-2"></i> Manual Capture
+            </button>
+        </div>
+
 
         <style>
             .toggle-switch {
@@ -192,7 +239,7 @@
 
     </div>
 
-    @push('scripts')
+    {{-- @push('scripts')
         <script>
             // Camera elements
             const video = document.getElementById('liveCamera');
@@ -340,6 +387,105 @@
                 stopCamera();
             });
         </script>
+    @endpush --}}
+
+    @push('scripts')
+    <script>
+        const video = document.getElementById('liveCamera');
+        const canvas = document.createElement('canvas');
+        const manualCaptureBtn = document.getElementById('manualCaptureBtn');
+
+        let stream = null;
+        let detectionInterval = null;
+        let lastCaptureTime = 0;
+        const captureInterval = {{ $captureInterval }}; // in ms
+
+        async function startCamera() {
+            try {
+                stopCamera();
+                const constraints = {
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                };
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+                return true;
+            } catch (err) {
+                console.error('Camera error:', err);
+                Livewire.dispatch('scan-error', {message: 'Could not access camera: ' + err.message});
+                return false;
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            stopDetection();
+        }
+
+        function startDetection() {
+            stopDetection(); // clear any previous interval
+            detectionInterval = setInterval(() => {
+                captureImage();
+            }, captureInterval);
+        }
+
+        function stopDetection() {
+            if (detectionInterval) {
+                clearInterval(detectionInterval);
+                detectionInterval = null;
+            }
+        }
+
+        async function captureImage() {
+            if (!stream) return;
+
+            const now = Date.now();
+            if ((now - lastCaptureTime) < captureInterval) return;
+            lastCaptureTime = now;
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            Livewire.dispatch('processLiveCapture', {imageData: dataUrl});
+
+            // Flash feedback
+            video.style.opacity = '0.5';
+            setTimeout(() => video.style.opacity = '1', 150);
+        }
+
+        manualCaptureBtn.addEventListener('click', captureImage);
+
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('detection-toggled', ({ active }) => {
+                if (active) startDetection();
+                else stopDetection();
+            });
+
+            Livewire.on('start-camera', async () => {
+                await startCamera();
+                if (@js($detectionActive)) startDetection();
+            });
+
+            Livewire.on('scan-error', ({ message }) => {
+                console.error('Scan error:', message);
+            });
+
+            Livewire.dispatch('initializeCamera');
+        });
+
+        document.addEventListener('livewire:before-unload', () => {
+            stopCamera();
+        });
+    </script>
     @endpush
+
    
 </div>

@@ -7,9 +7,11 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PlateScan;
+use App\Models\Owner;
 use App\Models\EntranceHistory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+
 
 class PlateScanner extends Component
 {
@@ -78,6 +80,16 @@ class PlateScanner extends Component
         $existingPlate = PlateScan::where('plate', $plate)->first();
         $this->existingRecord = $existingPlate ? true : false;
 
+        // Get or generate owner
+        $faker = fake('en_NG'); // Nigerian context
+
+        $owner = $existingPlate ? $existingPlate->owner : Owner::create([
+            'name' => $faker->firstName . ' ' . $faker->lastName,
+            'email' => Str::slug($faker->firstName . $faker->lastName, '') . '@example.com',
+            'phone' => '080' . rand(10000000, 99999999), // Simulate common MTN format
+            'photo' => 'user.png',
+        ]);
+
         // Create new scan record
         $scanRecord = PlateScan::create([
             'user_id' => auth()->id(),
@@ -86,6 +98,7 @@ class PlateScanner extends Component
             'image_path' => $relativePath,
             'raw_response' => json_encode($data),
             'is_duplicate' => $this->existingRecord,
+            'owner_id' => $owner->id,
         ]);
 
         // Add to entrance history regardless of whether it's a duplicate
@@ -94,6 +107,8 @@ class PlateScanner extends Component
             'scanned_at' => now(),
             'gate_location' => 'Main Entrance', // Adjust as needed
         ]);
+
+        
 
         // If it's a duplicate, get the frequency count
         $visitCount = 0;

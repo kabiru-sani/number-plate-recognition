@@ -1,5 +1,5 @@
 <div class="modal fade" id="scanModal" tabindex="-1" data-bs-backdrop="none" data-bs-keyboard="false" wire:ignore.self>
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             @if ($selectedScan)
                 <div class="modal-header bg-success ">
@@ -51,8 +51,40 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="col-md-5">
+
+                        @if($selectedScan->owner)
+                            <div class="col-md-5">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-header bg-gradient text-white">
+                                        <h6 class="mb-0 fw-semibold">
+                                            <i class="fa fa-user-circle me-2"></i> Vehicle Owner Information
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center flex-column text-center">
+                                            <img src="{{ asset('admin/vendors/images/team.png') }}" 
+                                                class="rounded-circle shadow mb-3" 
+                                                alt="Owner Photo" 
+                                                style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #0d6efd;">
+                                            
+                                            <h5 class="fw-bold text-dark mb-1">{{ $selectedScan->owner->name }}</h5>
+                                            
+                                            <p class="text-muted small mb-2">
+                                                <i class="fa fa-envelope me-1"></i> {{ $selectedScan->owner->email }}<br>
+                                                <i class="fa fa-phone me-1"></i> {{ $selectedScan->owner->phone }}
+                                            </p>
+
+                                            <div class="bg-light rounded p-2 w-100 mt-2 shadow-sm text-start">
+                                                <p class="mb-1"><strong>Gender:</strong> {{ $selectedScan->owner->gender ?? 'N/A' }}</p>
+                                                <p class="mb-1"><strong>State of Origin:</strong> {{ $selectedScan->owner->state_of_origin ?? 'N/A' }}</p>
+                                                <p class="mb-0"><strong>Address:</strong> {{ $selectedScan->owner->address ?? 'Not Provided' }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        {{-- <div class="col-md-5">
                             <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0 fw-semibold">
@@ -75,7 +107,7 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="modal-footer bg-light">

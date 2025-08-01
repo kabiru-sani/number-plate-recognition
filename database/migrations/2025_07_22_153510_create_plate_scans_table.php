@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('score')->nullable();
             $table->string('image_path')->nullable();
             $table->json('raw_response')->nullable();
+            $table->unsignedBigInteger('owner_id')->nullable();
             $table->timestamps();
         });
     }

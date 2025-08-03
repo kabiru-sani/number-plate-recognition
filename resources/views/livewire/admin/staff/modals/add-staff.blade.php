@@ -45,6 +45,42 @@
           <label>Rank <span class="text-danger">*</span></label>
           <select class="form-control" wire:model="rank">
             <option value="">Select Rank</option>
+            <option value="Admiral">Admiral</option>
+            <option value="Vice Admiral">Vice Admiral</option>
+            <option value="Rear Admiral">Rear Admiral</option>
+            <option value="Commodore">Commodore</option>
+            <option value="Captain">Captain</option>
+            <option value="Commander">Commander</option>
+            <option value="Lieutenant Commander">Lieutenant Commander</option>
+            <option value="Lieutenant">Lieutenant</option>
+            <option value="Sub-Lieutenant">Sub-Lieutenant</option>
+            <option value="Acting Sub-Lieutenant">Acting Sub-Lieutenant</option>
+            <option value="Warrant Chief Petty Officer">Warrant Chief Petty Officer</option>
+            <option value="Chief Petty Officer">Chief Petty Officer</option>
+            <option value="Petty Officer">Petty Officer</option>
+            <option value="Leading Seaman">Leading Seaman</option>
+            <option value="Able Seaman">Able Seaman</option>
+            <option value="Ordinary Seaman">Ordinary Seaman</option>
+
+            <option value="Air Chief Marshal">Air Chief Marshal</option>
+            <option value="Air Marshal">Air Marshal</option>
+            <option value="Air Vice Marshal">Air Vice Marshal</option>
+            <option value="Air Commodore">Air Commodore</option>
+            <option value="Group Captain">Group Captain</option>
+            <option value="Wing Commander">Wing Commander</option>
+            <option value="Squadron Leader">Squadron Leader</option>
+            <option value="Flight Lieutenant">Flight Lieutenant</option>
+            <option value="Flying Officer">Flying Officer</option>
+            <option value="Pilot Officer">Pilot Officer</option>
+            <option value="Air Warrant Officer">Air Warrant Officer</option>
+            <option value="Master Warrant Officer">Master Warrant Officer</option>
+            <option value="Warrant Officer">Warrant Officer</option>
+            <option value="Flight Sergeant">Flight Sergeant</option>
+            <option value="Sergeant">Sergeant</option>
+            <option value="Corporal">Corporal</option>
+            <option value="Lance Corporal">Lance Corporal</option>
+            <option value="Aircraftman/Aircraftwoman">Aircraftman/Aircraftwoman</option>
+
             <option value="General">General</option>
             <option value="Lieutenant General">Lieutenant General</option>
             <option value="Major General">Major General</option>
@@ -81,6 +117,7 @@
             <option value="Nigerian Army Engineers">Engineers</option>
             <option value="Nigerian Army Signals">Signals</option>
             <option value="Nigerian Army Medical Corps">Medical Corps</option>
+            <option value="Nigerian Defence Academy">Nigerian Defence Academy</option>
           </select>
           @error('unit') <div class="text-danger small">{{ $message }}</div> @enderror
         </div>

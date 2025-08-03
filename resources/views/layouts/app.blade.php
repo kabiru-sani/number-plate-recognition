@@ -66,7 +66,7 @@
 			{{ $slot }}
 
 			<div class="footer-wrap pd-20 mb-20 card-box mt-5">
-               © <script>document.write(new Date().getFullYear())</script> <a href="#">NDA </a>, All Right Reserved. By: Chikezie Ejika.
+               © <script>document.write(new Date().getFullYear())</script> <a href="#">NDA </a>, All Right Reserved. By: Chikezie Nwakpa Ejike.
 			</div>
 		</div>
 	</div>

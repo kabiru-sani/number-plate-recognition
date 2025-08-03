@@ -14,5 +14,6 @@ class Owner extends Model
         'gender',
         'address',
         'state_of_origin',
+        'department',
     ];
 }

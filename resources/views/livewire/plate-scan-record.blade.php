@@ -1,7 +1,7 @@
 <div>
     <div class="card-box pd-20 d-flex flex-wrap justify-content-between align-items-center mb-4">
         <h4 class="mb-0">Plate Scan History</h4>
-        <input type="text" class="form-control w-25" placeholder="Search by plate..." wire:model.debounce.500ms="search">
+        <input type="text" class="form-control w-25" placeholder="Search by plate..." wire:model.live="search">
     </div>
 
     <div class="card-box mb-30">

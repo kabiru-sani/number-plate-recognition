@@ -47,11 +47,46 @@ class OwnersSeeder extends Seeder
         ]);
             PlateScan::create([
                 'user_id' => User::first()->id,
-                'plate'    => 'Do588NN',
+                'plate'    => 'D88NN', 
                 'score'     => '0.994',
                 'image_path' => 'assets/img/plates/plate2.jpg',
                 'raw_response' => null,
                 'owner_id' => $owner1->id,
+            ]);
+            PlateScan::create([
+                'user_id' => User::first()->id,
+                'plate'    => 'DOS88NN', 
+                'score'     => '0.994',
+                'image_path' => 'assets/img/plates/plate2.jpg',
+                'raw_response' => null,
+                'owner_id' => $owner1->id,
+            ]);
+            PlateScan::create([
+                'user_id' => User::first()->id,
+                'plate'    => 'DS88NN', 
+                'score'     => '0.994',
+                'image_path' => 'assets/img/plates/plate2.jpg',
+                'raw_response' => null,
+                'owner_id' => $owner1->id,
+            ]);
+
+        $owner2 = Owner::create([
+            'name'  => 'NA-NDA',
+            'email' => 'NA@NDA.COM',
+            'phone' => '08012300078',
+            'department' => 'NA-NDA',
+            'photo' => 'user.png',
+            'gender' => 'male',
+            'address' => 'Defence HQ Abuja',
+            'state_of_origin' => '',
+        ]);
+            PlateScan::create([
+                'user_id' => User::first()->id,
+                'plate'    => 'NA453BE',
+                'score'     => '0.994',
+                'image_path' => 'assets/img/plates/plate3.jpg',
+                'raw_response' => null,
+                'owner_id' => $owner2->id,
             ]);
     }
 }

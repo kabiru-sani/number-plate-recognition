@@ -13,7 +13,7 @@
         }
 
         #registrationModal .btn-outline-secondary:hover {
-            background-color: #f8f9fa;
+            background-color: #76b3f0;
         }
 
         #registrationModal .btn-primary {
@@ -35,37 +35,32 @@
                     </div>
                     <div>
                         <h5 class="modal-title mb-0" id="registrationModalLabel">
-                            Register New Vehicle
+                            New Vehicle Plate Information
                         </h5>
-                        <p class="small mb-0 opacity-85">Plate: <strong>{{ $plateToRegister }}</strong></p>
+                        <p class="small mb-0 opacity-85">Plate: <strong>{{ strtoupper($plateToRegister) }}</strong></p>
                     </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" onclick="window.dispatchEvent(new Event('submit'))" data-bs-dismiss="modal" aria-label="Close">X</button>
             </div>
 
             <!-- Modal Body -->
             <div class="modal-body p-0">
                 <div class="row g-0">
                     <!-- Left Side - Visual Elements -->
-                    <div class="col-md-5 d-none d-md-flex bg-light position-relative">
+                    <div class="col-md-4 d-none d-md-flex bg-light position-relative">
                         <div class="p-4 w-100">
                             <div class="text-center mb-4">
                                 <img src="{{ asset('admin/vendors/images/nda-logo.png') }}" alt="Vehicle Registration" class="img-fluid" style="max-height: 180px;">
                             </div>
-                            <div class="alert alert-success border-success bg-success bg-opacity-10 small mb-0">
+                            <div class="alert alert-success border-success bg-success text-white bg-opacity-10 small mb-0 text-start">
                                 <i class="fa fa-info-circle me-2"></i>
                                 Complete all fields to register this vehicle's owner information
                             </div>
                         </div>
-                        <div class="position-absolute bottom-0 start-0 end-0 p-3 bg-success bg-opacity-05 text-center">
-                            <small class="text-muted">
-                                <i class="fa fa-shield-alt me-1"></i> Information secured
-                            </small>
-                        </div>
                     </div>
 
                     <!-- Right Side - Form Elements -->
-                    <div class="col-md-7">
+                    <div class="col-md-8">
                         <div class="p-4">
                             <h6 class="fw-bold text-muted mb-4 border-bottom pb-2">
                                 <i class="fa fa-user-circle me-2"></i> Owner Details
@@ -81,7 +76,7 @@
                                         </span>
                                         <input type="text" class="form-control border-0 shadow-none" 
                                                wire:model="ownerDetails.name" 
-                                               placeholder="Emanuel John">
+                                               placeholder="Gen. T.A Emanuel">
                                     </div>
                                     @error('ownerDetails.name') 
                                         <div class="text-danger small mt-1">
@@ -99,7 +94,7 @@
                                         </span>
                                         <input type="email" class="form-control border-0 shadow-none" 
                                                wire:model="ownerDetails.email" 
-                                               placeholder="emma@example.com">
+                                               placeholder="emma@nda.com">
                                     </div>
                                     @error('ownerDetails.email') 
                                         <div class="text-danger small mt-1">
@@ -126,27 +121,12 @@
                                     @enderror
                                 </div>
 
-                                <!-- Gender Field -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium">Gender</label>
-                                    <select class="form-control border" wire:model="ownerDetails.gender">
-                                        <option value="">Select gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                    @error('ownerDetails.gender') 
-                                        <div class="text-danger small mt-1">
-                                            <i class="fa fa-exclamation-circle me-1"></i> {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-
                                 <!-- Department Field -->
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <label class="form-label fw-medium">Department</label>
                                     <input type="text" class="form-control border" 
                                            wire:model="ownerDetails.department" 
-                                           placeholder="Security Unit">
+                                           placeholder="Enter department name">
                                     @error('ownerDetails.department') 
                                         <div class="text-danger small mt-1">
                                             <i class="fa fa-exclamation-circle me-1"></i> {{ $message }}
@@ -154,25 +134,12 @@
                                     @enderror
                                 </div>
 
-                                <!-- State of Origin -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-medium">State of Origin</label>
-                                    <input type="text" class="form-control border" 
-                                           wire:model="ownerDetails.state_of_origin" 
-                                           placeholder="Lagos">
-                                    @error('ownerDetails.state_of_origin') 
-                                        <div class="text-danger small mt-1">
-                                            <i class="fa fa-exclamation-circle me-1"></i> {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-
                                 <!-- Address Field -->
-                                <div class="col-12">
+                                <div class="col-md-12">
                                     <label class="form-label fw-medium">Address</label>
-                                    <textarea class="form-control border" rows="2" 
+                                    <input type="text" class="form-control border" 
                                               wire:model="ownerDetails.address" 
-                                              placeholder="Enter full address"></textarea>
+                                              placeholder="Enter full address">
                                     @error('ownerDetails.address') 
                                         <div class="text-danger small mt-1">
                                             <i class="fa fa-exclamation-circle me-1"></i> {{ $message }}
@@ -187,13 +154,26 @@
 
             <!-- Modal Footer -->
             <div class="modal-footer bg-light d-flex justify-content-between border-top">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
-                    <i class="fa fa-times me-2"></i> Cancel
+                <button type="button" class="btn btn-outline-secondary" onclick="window.dispatchEvent(new Event('submit'))" data-bs-dismiss="modal">
+                    <i class="fa fa-times me-2"></i> Close
                 </button>
-                <button type="button" class="btn btn-primary rounded-pill px-4" wire:click="registerPlate">
+
+                <button type="button" class="btn btn-success" wire:click="registerPlate">
                     <i class="fa fa-save me-2"></i> Register Vehicle
                 </button>
             </div>
         </div>
     </div>
 </div>
+<script>
+    window.addEventListener('submit', event => {
+        document.getElementById("registrationModal").click();
+    })
+</script>
+
+<script>
+    window.addEventListener('feedback', event => {
+        document.getElementById("registrationModal").click();
+    })
+</script>
+

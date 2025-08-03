@@ -37,7 +37,7 @@
                         </p>
                     </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" onclick="window.dispatchEvent(new Event('submit'))" data-bs-dismiss="modal">X</button>
             </div>
 
             <!-- Modal Body -->
@@ -46,8 +46,13 @@
                     <!-- Left Column - Plate Info -->
                     <div class="col-md-5 border-end">
                         <div class="text-center mb-4">
-                            <img src="{{ asset($scanResult['image_path'] ?? '') }}" alt="Plate image"
-                                 class="img-fluid rounded shadow" style="max-height: 180px;">
+                            @if(isset($scanResult['image_path']) || isset($scanResult['image_url']))
+                                <img src="{{ asset($scanResult['image_path'] ?? $scanResult['image_url'] ?? '') }}" 
+                                    alt="Plate image"
+                                    class="img-fluid rounded shadow" 
+                                    style="max-height: 180px;">
+                            @endif
+
                             <div class="d-flex justify-content-center gap-2 mt-3">
                                 <span class="badge bg-success px-3 py-2 rounded-pill">
                                     <i class="fa fa-tag me-1"></i> {{ strtoupper($scanResult['plate'] ?? '') }}
@@ -84,10 +89,10 @@
                                 <div>
                                     <h4 class="fw-bold mb-1">{{ $scanResult['owner']['name'] }}</h4>
                                     <div class="d-flex flex-wrap gap-1 mb-2">
-                                        <span class="badge bg-secondary bg-opacity-10 rounded-pill px-3 py-1 small">
+                                        {{-- <span class="badge bg-secondary bg-opacity-10 rounded-pill px-3 py-1 small">
                                             <i class="fa fa-{{ $scanResult['owner']['gender'] == 'male' ? 'mars' : 'venus' }} me-1"></i>
                                             {{ $scanResult['owner']['gender'] ?? 'N/A' }}
-                                        </span>
+                                        </span> --}}
                                         @if($scanResult['owner']['department'] ?? false)
                                             <span class="badge bg-info bg-opacity-10 rounded-pill px-3 py-1 small">
                                                 <i class="fa fa-building me-1"></i>
@@ -116,7 +121,7 @@
                                             @endif
                                             @if($scanResult['owner']['address'] ?? false)
                                                 <li>
-                                                    <i class="fa fa-map-marker-alt text-primary me-2"></i>
+                                                    <i class="fa fa-building text-primary me-2"></i>
                                                     {{ $scanResult['owner']['address'] }}
                                                 </li>
                                             @endif
@@ -149,10 +154,15 @@
 
             <!-- Modal Footer -->
             <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <i class="fa fa-times me-1"></i> Close
+                <button type="button" class="btn btn-outline-success" onclick="window.dispatchEvent(new Event('submit'))" data-bs-dismiss="modal">
+                    <i class="fa fa-check-circle me-1"></i> Grant Access
                 </button>
             </div>
         </div>
     </div>
 </div>
+<script>
+    window.addEventListener('submit', event => {
+        document.getElementById("successModal").click();
+    })
+</script>

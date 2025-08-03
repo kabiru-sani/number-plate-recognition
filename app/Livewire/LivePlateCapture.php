@@ -21,11 +21,24 @@ class LivePlateCapture extends Component
     public $lastCaptureTime = 0;
     public $captureInterval = 2000; // milliseconds between captures
     public $cameraError = null;
+    public $showSuccessModal = false;
+    public $showRegistrationModal = false;
+    public $ownerDetails = [];
+    public $plateToRegister = '';
 
     protected $listeners = [
         'initializeCamera' => 'initializeCamera',
         'processLiveCapture' => 'processImage',
-        'scan-error' => 'handleScanError'
+        'scan-error' => 'handleScanError',
+        'show-modal' => 'handleShowModal'
+    ];
+
+    protected $rules = [
+        'ownerDetails.name' => 'required|string|max:255',
+        'ownerDetails.email' => 'nullable|email|max:255',
+        'ownerDetails.phone' => 'required|string|max:20',
+        'ownerDetails.department' => 'nullable|string|max:255',
+        'ownerDetails.address' => 'nullable|string|max:500',
     ];
 
     public function mount()
@@ -52,6 +65,7 @@ class LivePlateCapture extends Component
         $this->isScanning = true;
         $this->lastCaptureTime = $now;
         $this->cameraError = null;
+        $this->reset(['scanResult', 'showSuccessModal', 'showRegistrationModal']);
 
         try {
             $imageData = str_replace('data:image/jpeg;base64,', '', $imageData);
@@ -71,7 +85,7 @@ class LivePlateCapture extends Component
                 mkdir(dirname($fullPath), 0755, true);
             }
 
-            // Save the image directly to public directory
+            // Save the image
             file_put_contents($fullPath, $imageBinary);
 
             // Send to PlateRecognizer
@@ -90,57 +104,64 @@ class LivePlateCapture extends Component
                 throw new \Exception('No plate detected in image');
             }
 
-            $plate = $data['results'][0]['plate'] ?? 'N/A';
+            $plate = $data['results'][0]['plate'] ?? null;
             $score = $data['results'][0]['score'] ?? 0;
 
-            // Check if plate exists in database
-            $existingPlate = PlateScan::where('plate', $plate)->first();
-            $this->existingRecord = $existingPlate ? true : false;
-
-            // Get or generate owner
-            $faker = fake('en_NG');
-
-            $owner = $existingPlate ? $existingPlate->owner : Owner::create([
-                'name' => $faker->firstName . ' ' . $faker->lastName,
-                'email' => Str::slug($faker->firstName . $faker->lastName, '') . '@example.com',
-                'phone' => '080' . rand(10000000, 99999999), // Simulate common MTN format
-                'photo' => 'user.png',
-            ]);
-
-            $scanRecord = PlateScan::create([
-                'user_id' => auth()->id(),
-                'plate' => $plate,
-                'score' => $score,
-                'image_path' => $relativePath,
-                'raw_response' => json_encode($data),
-                'auto_captured' => true,
-                'is_duplicate' => $this->existingRecord,
-                'owner_id' => $owner->id,
-            ]);
-
-             // Add to entrance history regardless of whether it's a duplicate
-            EntranceHistory::create([
-                'plate_scan_id' => $scanRecord->id,
-                'scanned_at' => now(),
-                'gate_location' => 'Main Entrance Gate',
-            ]);
-
-            // If it's a duplicate, get the frequency count
-            $visitCount = 0;
-            if ($this->existingRecord) {
-                $visitCount = EntranceHistory::whereHas('plateScan', function($query) use ($plate) {
-                    $query->where('plate', $plate);
-                })->count();
+            if (!$plate) {
+                throw new \Exception('No valid plate number detected');
             }
 
+            // Check if plate exists in database
+            $existingPlate = PlateScan::with('owner')->where('plate', $plate)->first();
+
+            // Initialize scanResult with common fields
             $this->scanResult = [
                 'plate' => $plate,
                 'score' => $score,
                 'image_url' => asset($relativePath),
-                //  'image_path' => $relativePath,
-                'existing_record' => $this->existingRecord,
-                'visit_count' => $visitCount,
+                'existing_record' => (bool)$existingPlate,
+                'visit_count' => 0,
+                'auto_captured' => true,
             ];
+
+            if ($existingPlate) {
+                // Plate found - update scanResult with owner info
+                $visitCount = EntranceHistory::whereHas('plateScan', function($query) use ($plate) {
+                    $query->where('plate', $plate);
+                })->count();
+
+                $this->scanResult['owner'] = $existingPlate->owner;
+                $this->scanResult['visit_count'] = $visitCount;
+
+                // Create new scan record
+                PlateScan::create([
+                    'user_id' => auth()->id(),
+                    'plate' => $plate,
+                    'score' => $score,
+                    'image_path' => $relativePath,
+                    'raw_response' => json_encode($data),
+                    'is_duplicate' => true,
+                    'auto_captured' => true,
+                    'owner_id' => $existingPlate->owner->id,
+                ]);
+
+                // Add to entrance history
+                EntranceHistory::create([
+                    'plate_scan_id' => $existingPlate->id,
+                    'scanned_at' => now(),
+                    'gate_location' => 'Main Entrance Gate',
+                ]);
+
+                $this->dispatch('feedback', feedback: "Vehicle Plate Record Found!");
+                $this->showSuccessModal = true;
+                $this->dispatch('show-modal', type: 'success');
+            } else {
+                // Plate not found - prompt for registration
+                $this->plateToRegister = $plate;
+                $this->dispatch('errorfeedback', errorfeedback: "Vehicle Plate Record Not Found!");
+                $this->showRegistrationModal = true;
+                $this->dispatch('show-modal', type: 'registration');
+            }
 
         } catch (\Exception $e) {
             $this->cameraError = $e->getMessage();
@@ -148,6 +169,64 @@ class LivePlateCapture extends Component
         } finally {
             $this->isScanning = false;
         }
+    }
+
+    public function registerPlate()
+    {
+        $this->validate();
+
+        // Create new owner
+        $owner = Owner::create([
+            'name' => $this->ownerDetails['name'],
+            'email' => $this->ownerDetails['email'] ?? null,
+            'phone' => $this->ownerDetails['phone'],
+            'department' => $this->ownerDetails['department'] ?? null,
+            'address' => $this->ownerDetails['address'] ?? null,
+            'gender' => $this->ownerDetails['gender'] ?? 'Male',
+            'photo' => 'user.png',
+        ]);
+
+        // Create new plate scan record
+        $scanRecord = PlateScan::create([
+            'user_id' => auth()->id(),
+            'plate' => $this->plateToRegister,
+            'score' => $this->scanResult['score'],
+            'image_path' => $this->scanResult['image_url'],
+            'raw_response' => json_encode(['plate' => $this->plateToRegister]),
+            'is_duplicate' => false,
+            'auto_captured' => true,
+            'owner_id' => $owner->id,
+        ]);
+
+        // Add to entrance history
+        EntranceHistory::create([
+            'plate_scan_id' => $scanRecord->id,
+            'scanned_at' => now(),
+            'gate_location' => 'Main Entrance Gate',
+        ]);
+
+        // Update scan result with owner info
+        $this->scanResult['owner'] = $owner;
+        $this->scanResult['visit_count'] = 1;
+        $this->scanResult['existing_record'] = false;
+
+        $this->dispatch('feedback', feedback: "Vehicle Information registered successfully!");
+        $this->reset(['ownerDetails', 'showRegistrationModal']);
+        $this->showSuccessModal = true;
+    }
+
+    public function handleShowModal($type)
+    {
+        if ($type === 'success') {
+            $this->showSuccessModal = true;
+        } elseif ($type === 'registration') {
+            $this->showRegistrationModal = true;
+        }
+    }
+
+    public function closeModals()
+    {
+        $this->reset(['showSuccessModal', 'showRegistrationModal']);
     }
 
 

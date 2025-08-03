@@ -238,7 +238,8 @@
         @endif
 
     </div>
-
+    @include('livewire.modals.success-modal')
+    @include('livewire.modals.owner-register-modal')
     {{-- @push('scripts')
         <script>
             // Camera elements
@@ -390,6 +391,19 @@
     @endpush --}}
 
     @push('scripts')
+    <script>
+        document.addEventListener('livewire:init', function() {
+            Livewire.on('show-modal', (data) => {
+                if (data.type === 'success') {
+                    var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                } else if (data.type === 'registration') {
+                    var registrationModal = new bootstrap.Modal(document.getElementById('registrationModal'));
+                    registrationModal.show();
+                }
+            });
+        });
+    </script>
     <script>
         const video = document.getElementById('liveCamera');
         const canvas = document.createElement('canvas');

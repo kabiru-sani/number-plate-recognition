@@ -88,9 +88,11 @@
                     @endif
 
                     <div class="text-end mt-3">
-                        <button class="btn btn-primary px-4" type="submit" wire:loading.attr="disabled">
-                            <span>Scan Plate</span>
-                            <x-action-loader target="scanPlate" />
+                        <button class="btn btn-primary px-4" type="submit" wire:loading.attr="disabled" wire:target="scanPlate">
+                            <span wire:loading.remove wire:target="scanPlate">Scan Plate</span>
+                            <span wire:loading wire:target="scanPlate">
+                                <x-action-loader target="scanPlate" />
+                            </span>
                         </button>
                     </div>
                 </form>
